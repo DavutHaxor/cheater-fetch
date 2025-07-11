@@ -25,49 +25,52 @@ const readline = require('readline').createInterface({
       const result = await profilePage.evaluate(() => {
         // 1. Get CSSTATSGG Matches 
         const getCsstatsggMatches = () => {
-          const button = document.querySelector('button[hx-get*="csstatsgg-matches"]');
-          return button ? button.textContent.trim() : '0';
-        };
-
-        // 2. Get Current Playtime
-        const getCurrentPlaytime = () => {
-          try {
-            const playtimeElements = document.querySelectorAll('p.text-xs + p.text-white span.tooltip[data-tip="Total"]');
+        // First try csstatsgg-matches
+        const csstatsButton = document.querySelector('button[hx-get*="csstatsgg-matches"]');
+        if (csstatsButton) return csstatsButton.textContent.trim();
+  
+        // If not found, try leetify-matches
+        const leetifyButton = document.querySelector('button[hx-get*="leetify-matches"]');
+        return leetifyButton ? leetifyButton.textContent.trim() : '0';
+      };
+      // 2. Get Current Playtime
+      const getCurrentPlaytime = () => {
+        try {
+          const playtimeElements = document.querySelectorAll('p.text-xs + p.text-white span.tooltip[data-tip="Total"]');
             return playtimeElements.length >= 2 ? playtimeElements[1].textContent.trim() : 'Hidden';
-          } catch (error) {
+        } catch (error) {
             return 'Hidden';
           }
-        };
+      };
 
-        // 3. Get Faceit Level
-        const getFaceitLevelCS2 = () => {
-          const faceitImgs = document.querySelectorAll('img[alt^="Faceit level"]');
-          if (faceitImgs.length === 0) return "No -";
-          if (faceitImgs.length >= 2) {
-            const cs2Level = faceitImgs[1].getAttribute('alt').match(/\d+/)?.[0];
-            return cs2Level ? `Yes ${cs2Level}` : "Yes -";
-          }
+      // 3. Get Faceit Level
+      const getFaceitLevelCS2 = () => {
+        const faceitImgs = document.querySelectorAll('img[alt^="Faceit level"]');
+        if (faceitImgs.length === 0) return "No -";
+        if (faceitImgs.length >= 2) {
+          const cs2Level = faceitImgs[1].getAttribute('alt').match(/\d+/)?.[0];
+          return cs2Level ? `Yes ${cs2Level}` : "Yes -";
+        }
           const csgoLevel = faceitImgs[0].getAttribute('alt').match(/\d+/)?.[0];
           return csgoLevel ? `Yes ${csgoLevel}` : "Yes -";
         };
 
-        // 4. Get Premier Rating 
-        const getHighestPremierRating = () => {
-          const ratings = Array.from(document.querySelectorAll('.cs2rating'))
-            .map(el => parseInt(el.textContent.replace(/\s+|,/g, ''))) || [0];
-          return ratings.length > 0 ? Math.max(...ratings).toLocaleString() : '0';
-        };
+      // 4. Get Premier Rating 
+      const getHighestPremierRating = () => {
+        const ratings = Array.from(document.querySelectorAll('.cs2rating'))
+          .map(el => parseInt(el.textContent.replace(/\s+|,/g, ''))) || [0];
+        return ratings.length > 0 ? Math.max(...ratings).toLocaleString() : '0';
+      };
 
-        // Get and format all values
-        const matchCount = getCsstatsggMatches();
-        const playtime = getCurrentPlaytime();
-        const faceitData = getFaceitLevelCS2();
-        const premierRating = getHighestPremierRating();
+      // Get and format all values
+      const matchCount = getCsstatsggMatches();
+      const playtime = getCurrentPlaytime();
+      const faceitData = getFaceitLevelCS2();
+      const premierRating = getHighestPremierRating();
 
-        const [yesNo, faceitLevel] = faceitData.includes('Yes') ? 
-          ['Yes', faceitData.split(' ')[1] || '-'] : 
-          ['No', '-'];
-
+      const [yesNo, faceitLevel] = faceitData.includes('Yes') ? 
+        ['Yes', faceitData.split(' ')[1] || '-'] : 
+        ['No', '-'];
         return `${matchCount} ${playtime} ${yesNo} ${faceitLevel} ${premierRating}`;
       });
 
