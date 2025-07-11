@@ -20,7 +20,7 @@ const readline = require('readline').createInterface({
     try {
       console.log(`\nFetching data from: ${profileUrl}`);
       await profilePage.goto(profileUrl);
-      await profilePage.waitForTimeout(2500); // Wait for page to load
+      await profilePage.waitForTimeout(5000); // Wait for page to load
 
       const result = await profilePage.evaluate(() => {
         // 1. Get CSSTATSGG Matches 
