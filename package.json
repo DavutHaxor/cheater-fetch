@@ -1,0 +1,16 @@
+{
+  "name": "cheater-fetch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "extract.js",
+  "scripts": {
+    "cheater-fetch": "node fetch.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.54.0"
+  }
+}
